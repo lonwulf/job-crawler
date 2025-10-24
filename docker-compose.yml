@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  android-job-crawler:
+    container_name: android-job-crawler
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+        API_KEY: ${API_KEY}
+        CX: ${CX}
+        INTERVAL_HOURS: ${INTERVAL_HOURS}
+    volumes:
+      - ./data:/app/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "pgrep", "java"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
