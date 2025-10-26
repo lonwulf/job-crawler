@@ -24,14 +24,19 @@ fun runCrawler() = runBlocking {
 
 
     val titles = listOf(
-        "Android Engineer", "Android Developer", "Android software developer",
-        "Senior Android Engineer", "Senior Android Developer", "Senior Android Software developer",
-        "Software engineer - Android", "Software developer - Android"
+        "Android Engineer",
+//        "Android Developer" , "Android software developer",
+        "Senior Android Engineer"
+        //        , "Senior Android Developer", "Senior Android Software developer",
+//        "Software engineer - Android", "Software developer - Android"
     )
 
     val locations = listOf(
-        "Kenya onsite", "Kenya hybrid", "Worldwide",
-        "Worldwide remote", "Remote", "Anywhere remote", "EMEA"
+        "Kenya onsite", "Kenya hybrid",
+//        "Worldwide", "Worldwide remote",
+        "Remote",
+//        "Anywhere remote",
+        "EMEA"
     )
 
     val resultsPerQueryTotal = 15
@@ -60,7 +65,7 @@ fun runCrawler() = runBlocking {
 
                 launch {
                     val maxPages = ceil(resultsPerQueryTotal.toDouble() / resultsPerRequest.toDouble()).toInt()
-                    println("➡️ Searching '$query' (up to $maxPages pages)")
+                    println("➡--> Searching '$query' (up to $maxPages pages)")
 
                     val results = searchClient.searchJobs(query, maxResults = resultsPerQueryTotal, maxPages = maxPages)
 
@@ -68,15 +73,15 @@ fun runCrawler() = runBlocking {
                         requestsMade += maxPages
                         for (result in results) {
                             if (store.isSeen(result.urlLink)) continue
-                            val isRecent = DateUtils.isWithinDays(result.datePosted, maxAgeDays)
+                            val isRecent = result.datePosted == null || DateUtils.isWithinDays(result.datePosted, maxAgeDays)
                             val isRelevant = result.isRelevantAndroidJob()
-                            val experienceMatch = result.matchesExperience(1, 6)
+                            val experienceMatch = result.matchesExperience(1, 6) || result.snippet?.contains("experience", true) != false
 
                             if (!isRecent || !isRelevant || !experienceMatch) continue
 
                             store.markSeen(result.urlLink, result.title, result.company, result.datePosted)
                             allResults.add(result)
-                            println("✅ New job: ${result.title} (${result.company ?: "Unknown"})")
+                            println("[x] New job: ${result.title} (${result.company ?: "Unknown"})")
                         }
                     }
                 }
@@ -92,7 +97,7 @@ fun runCrawler() = runBlocking {
         println("${Clock.System.now()}: Wrote ${allResults.size} new jobs to CSV(s).")
     }
 
-    println("Job crawling completed successfully ✅")
+    println("Job crawling completed successfully [x]")
 }
 
 fun main() = runBlocking {

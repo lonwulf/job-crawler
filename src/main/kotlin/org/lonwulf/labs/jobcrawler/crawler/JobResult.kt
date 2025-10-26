@@ -9,39 +9,86 @@ data class JobResult(
     val source:String?,
     val locationHint:String?
 ){
-    fun matchesExperience(minYears:Int =1, maxYears:Int =6):Boolean{
-        val text = listOf(title, snippet, company).joinToString(" ").lowercase()
-        if(text.isBlank()) return false
-
-        val regexes = listOf(
-            Regex("""\b([1-6])\s*(?:\+|plus)?\s*(?:-|\u2013|\u2014)?\s*([1-6])?\s*years?\b"""),
-            Regex("""\b(?:minimum|min\.|at least)\s*([1-6])\s*years?\b"""),
-            Regex("""\b([1-6])\s*\+?\s*years?\b""")
+    object ExperienceRegexCache {
+        val experienceRegex = Regex(
+            """\b(\d+)\s*(?:(?:-|–|—|to)\s*(\d+)\s*|\+|plus\s+)?(?:years?|yrs?)\b|""" +
+                    """\b(?:minimum|min\.?|at\s+least)\s*(\d+)\s*(?:years?|yrs?)\b""",
+            RegexOption.IGNORE_CASE
         )
-        for (r in regexes) {
-            val m = r.find(text)
-            if (m != null) {
-                val g1 = m.groups[1]?.value?.toIntOrNull()
-                val g2 = m.groups[2]?.value?.toIntOrNull()
-                if(g1 != null){
-                    val low = g1
-                    val high = g2 ?: g1
-                    if (high >= minYears && low <= maxYears) return true
-                }
-            }
+    }
+
+    fun matchesExperience(
+        minYears: Int = 1,
+        maxYears: Int = 6
+    ): Boolean {
+        val text = listOf(title, snippet, company)
+            .joinToString(" ")
+            .replace("[–—]".toRegex(), "-") // normalize en/em dashes to ASCII dash
+            .replace("\\s+".toRegex(), " ") // collapse multiple spaces
+            .trim()
+
+        if (text.isEmpty()) return false
+
+        val match = ExperienceRegexCache.experienceRegex.find(text) ?: return false
+
+        val low = (match.groups[1]?.value ?: match.groups[3]?.value)?.toIntOrNull() ?: return false
+        val high = match.groups[2]?.value?.toIntOrNull() ?: low
+
+        return low in minYears..maxYears ||
+                high in minYears..maxYears ||
+                (low <= minYears && high >= maxYears)
+    }
+
+
+//    fun isRelevantAndroidJob(): Boolean {
+//        val text = listOf(title, snippet, company, locationHint)
+//            .joinToString(" ")
+//            .lowercase()
+//
+//        val includeKeywords = listOf("android", "java", "kotlin", "jetpack", "compose", "mobile", "play store")
+//        val excludeKeywords = listOf("ios", "flutter", "web", "intern", "qa", "test automation")
+//
+//        val score = includeKeywords.count { it in text } - excludeKeywords.count { it in text }
+//        return score >= 1 // must have at least one relevant keyword and not many irrelevant ones
+//    }
+
+    object JobFilterCache {
+        private val nonWordChars = Regex("[^\\w\\s]+")
+        private val slashes = Regex("[/\\\\]")
+
+        val hybridRegexes = listOf("flutter", "kmm", "kotlin multiplatform").map {
+            Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE)
         }
-        return false
+        val excludeRegexes = listOf(
+            "react native", "react-native", "reactnative",
+            "web developer", "web engineer", "frontend", "full-stack",
+            "intern", "internship",
+            "qa engineer", "qa automation", "test engineer", "test automation",
+            "quality assurance", "sdet", "tester", "testing engineer"
+        ).map { Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE) }
+
+        val androidRegex = Regex("\\bandroid\\b", RegexOption.IGNORE_CASE)
+        val iosRegex = Regex("\\bios\\b", RegexOption.IGNORE_CASE)
+
+        fun normalize(text: String): String = text
+            .replace(slashes, " ")
+            .replace(nonWordChars, " ")
+            .lowercase()
+            .trim()
     }
 
     fun isRelevantAndroidJob(): Boolean {
-        val text = listOf(title, snippet, company, locationHint)
-            .joinToString(" ")
-            .lowercase()
+        val cache = JobFilterCache
+        val normalizedText = cache.normalize(
+            listOf(title, snippet, company, locationHint).joinToString(" ")
+        )
 
-        val includeKeywords = listOf("android", "kotlin", "jetpack", "compose", "mobile", "play store")
-        val excludeKeywords = listOf("ios", "flutter", "web", "intern", "qa", "test automation")
+        if (cache.excludeRegexes.any { it.containsMatchIn(normalizedText) }) return false
+        if (cache.hybridRegexes.any { it.containsMatchIn(normalizedText) }) return true
 
-        val score = includeKeywords.count { it in text } - excludeKeywords.count { it in text }
-        return score >= 1 // must have at least one relevant keyword and not many irrelevant ones
+        val hasAndroid = cache.androidRegex.containsMatchIn(normalizedText)
+        val hasIos = cache.iosRegex.containsMatchIn(normalizedText)
+
+        return hasAndroid
     }
 }
