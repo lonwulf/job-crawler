@@ -45,4 +45,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 .env
-data/
+data/seen_job_ads.db
+data/*.csv
