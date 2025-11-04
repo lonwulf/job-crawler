@@ -1,4 +1,4 @@
-package org.lonwulf.labs.jobcrawler.crawler
+package org.lonwulf.labs.jobcrawler.domain.model
 
 data class JobResult(
     val title: String,

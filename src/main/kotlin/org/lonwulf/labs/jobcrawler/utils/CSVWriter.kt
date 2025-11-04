@@ -2,7 +2,7 @@ package org.lonwulf.labs.jobcrawler.utils
 
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
-import org.lonwulf.labs.jobcrawler.crawler.JobResult
+import org.lonwulf.labs.jobcrawler.domain.model.JobResult
 import java.io.File
 import java.io.FileWriter
 import java.time.LocalDate
@@ -13,7 +13,7 @@ object CSVWriter {
 
     private fun ensureHeader(file: File) {
         if (!file.exists()) {
-            file.parentFile?.mkdirs() // ensure directory exists
+            file.parentFile?.mkdirs()
             FileWriter(file, false).use { fw ->
                 CSVPrinter(
                     fw,

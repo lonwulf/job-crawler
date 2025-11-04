@@ -2,12 +2,10 @@ package org.lonwulf.labs.jobcrawler.utils
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.datetime.minus
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 object DateUtils {
@@ -32,7 +30,7 @@ object DateUtils {
             return try {
                 val dateTime = LocalDate.parse(matchedReadableDate.value, DateTimeFormatter.ofPattern("MMMM d, yyyy"))
                 dateTime.atStartOfDay(ZoneOffset.UTC).toInstant().toString()
-            }catch (ex: Exception){
+            } catch (ex: Exception) {
                 null
             }
         }
@@ -59,9 +57,9 @@ object DateUtils {
                 "month" -> now.minus((amount * 86400 * 30).seconds)
                 else -> now
             }
-            return  instant.toString()
+            return instant.toString()
         }
-        if (lowerTxt.contains("yesterday")){
+        if (lowerTxt.contains("yesterday")) {
             return Clock.System.now().minus(86400.seconds).toString()
         }
         return null

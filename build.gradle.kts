@@ -25,7 +25,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.13")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-
+    implementation("io.insert-koin:koin-core:4.1.0")
 
     testImplementation(kotlin("test"))
 }

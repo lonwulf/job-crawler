@@ -1,10 +1,10 @@
 package org.lonwulf.labs.jobcrawler.crawler
 
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.JsonAdapter
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okio.IOException
 import org.lonwulf.labs.jobcrawler.data.response.SearchDTO
+import org.lonwulf.labs.jobcrawler.domain.model.JobResult
 import org.lonwulf.labs.jobcrawler.utils.DateUtils
 import java.net.URLEncoder
 import kotlin.math.min
@@ -13,12 +13,10 @@ class GoogleSearchClient(
     private val apiKey: String,
     private val cx: String,
     private val resultsPerRequest: Int = 10,
-    private val delayMsBetweenRequests: Long = 500
+    private val delayMsBetweenRequests: Long = 500,
+    private val client: OkHttpClient,
+    private val adapter: JsonAdapter<SearchDTO>
 ) {
-
-    private val client = OkHttpClient()
-    private val moshi = Moshi.Builder().build()
-    private val adapter = moshi.adapter(SearchDTO::class.java)
     private val baseUrl = "https://www.googleapis.com/customsearch/v1"
 
     fun searchJobs(query: String, maxResults: Int = 15, maxPages: Int = 2): List<JobResult> {
