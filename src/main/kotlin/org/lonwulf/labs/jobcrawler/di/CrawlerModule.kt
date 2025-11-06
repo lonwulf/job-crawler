@@ -49,7 +49,8 @@ val appModule = module {
     }
     single {
         val config = get<CrawlerConfig>()
-        SeenStore("${config.dataDir}/seen_job_ads.db")
+        val dbPath = System.getenv("EXPORT_PATH") ?: config.dataDir
+        SeenStore("${dbPath}/seen_job_ads.db")
     }
     single<IJobServiceRepository> {
         JobServiceRepositoryImpl(config = get(), store = get(), searchClient = get())

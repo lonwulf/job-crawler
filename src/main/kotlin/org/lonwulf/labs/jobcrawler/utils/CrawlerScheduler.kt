@@ -51,11 +51,11 @@ suspend fun scheduleCrawler(
                 throw ce
             } catch (e: Exception) {
                 consecutiveFailures++
-                println("❌ Unexpected error during crawl: ${e.message}")
+                println("[xx] Unexpected error during crawl: ${e.message}")
                 e.printStackTrace()
 
                 if (consecutiveFailures >= maxConsecutiveFailures) {
-                    println("❌ Too many consecutive failures. Applying backoff...")
+                    println("[xx] Too many consecutive failures. Applying backoff...")
                     delay(backoffMinutes.minutes)
                     consecutiveFailures = 0
                 }
