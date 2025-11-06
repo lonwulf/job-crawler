@@ -13,6 +13,10 @@ object ConfigLoader {
             ?.takeIf { it.isNotBlank() }?.toLongOrNull()
             ?: 6
 
+        val envTitles = getEnvOrThrow("TITLES").split(",").map { it.trim() }
+        val envLocations = getEnvOrThrow("LOCATIONS").split(",").map { it.trim() }
+
+        //TODO delete titles and location hardcoded vals
         val titles = listOf(
             "Android Engineer",
             "Android Developer",
@@ -24,24 +28,24 @@ object ConfigLoader {
         )
 
         val locations = listOf(
-            "Kenya onsite", "Kenya hybrid",
+            "in Kenya onsite", "in Kenya hybrid",
             "Worldwide",
 //        "Worldwide remote",
             "Remote",
 //        "Anywhere remote",
-            "EMEA"
+            "in EMEA"
         )
 
         return CrawlerConfig(
             apiKey = apiKey,
             cxId = cx,
-            titles = titles,
-            locations = locations,
+            titles = envTitles ,
+            locations = envLocations ,
             intervalHours = intervalHours
         )
     }
 
-    private fun getEnvOrThrow(key:String):String =
+    private fun getEnvOrThrow(key: String): String =
         System.getenv(key)
             ?.takeIf { it.isNotBlank() }
             ?: error("❌ Environment variable $key is missing or empty.")
