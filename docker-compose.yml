@@ -7,14 +7,18 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-        API_KEY: ${API_KEY}
-        CX: ${CX}
-        INTERVAL_HOURS: ${INTERVAL_HOURS}
+      API_KEY: ${API_KEY}
+      CX: ${CX}
+      INTERVAL_HOURS: ${INTERVAL_HOURS}
+      TITLES: "Android Engineer, Android Developer, Senior Android Engineer, Senior Android Developer, Android software developer, Senior Android Software developer, Software developer - Android, Software engineer - Android"
+      LOCATIONS: "in Kenya onsite, in Kenya hybrid, Worldwide, Remote, in EMEA"
+      EXPORT_PATH: "/app/exports"
     volumes:
-      - ./data:/app/data
+      - ~/Documents/Job-Crawler:/app/exports
+#      - ./data:/app/data
     restart: always
     healthcheck:
-      test: ["CMD", "pgrep", "java"]
+      test: [ "CMD", "pgrep", "java" ]
       interval: 1m
       timeout: 10s
       retries: 3
