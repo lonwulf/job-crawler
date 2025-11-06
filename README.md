@@ -1,5 +1,5 @@
 # Job Crawler
-- Configure your env with `API_KEY`, `CX`, and `INTERVAL_HOURS` values
+- Configure your `.env` file with `API_KEY`, `CX`, and `INTERVAL_HOURS` values
 - `API_KEY` can be setup and retrieved here [Custom search](https://developers.google.com/custom-search/v1/overview)
 - `CX` id can be setup and retrieved here [Programmable Search Engine ID](https://programmablesearchengine.google.com/controlpanel/all)
 
