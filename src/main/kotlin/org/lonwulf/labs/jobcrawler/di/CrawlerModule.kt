@@ -12,6 +12,7 @@ import org.lonwulf.labs.jobcrawler.data.response.SearchDTO
 import org.lonwulf.labs.jobcrawler.domain.model.CrawlerConfig
 import org.lonwulf.labs.jobcrawler.domain.repository.IJobServiceRepository
 import org.lonwulf.labs.jobcrawler.utils.ConfigLoader
+import org.lonwulf.labs.jobcrawler.utils.getEnvOrThrow
 import java.util.concurrent.TimeUnit
 
 val appModule = module {
@@ -49,7 +50,7 @@ val appModule = module {
     }
     single {
         val config = get<CrawlerConfig>()
-        val dbPath = System.getenv("EXPORT_PATH") ?: config.dataDir
+        val dbPath = getEnvOrThrow("EXPORT_PATH") ?: config.dataDir
         SeenStore("${dbPath}/seen_job_ads.db")
     }
     single<IJobServiceRepository> {

@@ -9,7 +9,7 @@
 - Currently, the files are exported to Documents directory which is also customizable in the `docker-compose.yml`
 
 ### Other customizations 
-- Currently, in the model `JobResult.kt` on the `JobFilterCache` obj, you can modify and exclude the titles you do not want included in the results at `excludeRegexes` `List` (to refactor this to yml)
+- Currently, in the `docker-compose.yml` file, you can modify and exclude the titles you do not want included in the results at `EXCLUDE_REGEXES` and specify the role you want to filter `ROLE`
 
 
 **GO NUTS**

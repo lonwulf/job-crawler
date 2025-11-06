@@ -98,7 +98,7 @@ class JobServiceRepositoryImpl(
             try {
                 if (store.isSeen(result.urlLink)) continue
                 val isRecent = result.datePosted == null || DateUtils.isWithinDays(result.datePosted, config.maxAgeDays)
-                val isRelevant = result.isRelevantAndroidJob()
+                val isRelevant = result.isRelevantJob()
                 val experienceMatch =
                     result.matchesExperience(1, 6) || result.snippet?.contains("experience", true) != false
                 if (!isRecent || !isRelevant || !experienceMatch) continue
