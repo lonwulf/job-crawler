@@ -44,9 +44,9 @@ object ConfigLoader {
             intervalHours = intervalHours
         )
     }
-
-    private fun getEnvOrThrow(key: String): String =
-        System.getenv(key)
-            ?.takeIf { it.isNotBlank() }
-            ?: error("❌ Environment variable $key is missing or empty.")
 }
+
+fun getEnvOrThrow(key: String): String =
+    System.getenv(key)
+        ?.takeIf { it.isNotBlank() }
+        ?: error("❌ Environment variable $key is missing or empty.")

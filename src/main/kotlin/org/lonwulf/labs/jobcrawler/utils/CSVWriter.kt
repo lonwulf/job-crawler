@@ -33,7 +33,7 @@ object CSVWriter {
      */
     fun appendJobs(jobs: List<JobResult>, dirPath: String = "") {
         if (jobs.isEmpty()) return
-        val exportDir = System.getenv("EXPORT_PATH") ?: dirPath
+        val exportDir = getEnvOrThrow("EXPORT_PATH") ?: dirPath
 
         val directory = File(exportDir)
         if (!directory.exists()) directory.mkdirs()

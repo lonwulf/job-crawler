@@ -1,14 +1,16 @@
 package org.lonwulf.labs.jobcrawler.domain.model
 
+import org.lonwulf.labs.jobcrawler.utils.getEnvOrThrow
+
 data class JobResult(
     val title: String,
     val urlLink: String,
     val company: String?,
     val snippet: String?,
     val datePosted: String?,
-    val source:String?,
-    val locationHint:String?
-){
+    val source: String?,
+    val locationHint: String?
+) {
     object ExperienceRegexCache {
         val experienceRegex = Regex(
             """\b(\d+)\s*(?:(?:-|–|—|to)\s*(\d+)\s*|\+|plus\s+)?(?:years?|yrs?)\b|""" +
@@ -55,19 +57,28 @@ data class JobResult(
     object JobFilterCache {
         private val nonWordChars = Regex("[^\\w\\s]+")
         private val slashes = Regex("[/\\\\]")
-
-        val hybridRegexes = listOf("flutter", "kmm", "kotlin multiplatform").map {
+        val envHybridRegexes = getEnvOrThrow("HYBRID_REGEXES").split(",").map(String::trim).map {
             Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE)
         }
-        val excludeRegexes = listOf(
-            "react native", "react-native", "reactnative",
-            "web developer", "web engineer", "frontend", "full-stack",
-            "intern", "internship",
-            "qa engineer", "qa automation", "test engineer", "test automation",
-            "quality assurance", "sdet", "tester", "testing engineer"
-        ).map { Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE) }
+        val envExcludeRegexes = getEnvOrThrow("EXCLUDE_REGEXES").split(",").map(String::trim).map {
+            Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE)
+        }
 
-        val androidRegex = Regex("\\bandroid\\b", RegexOption.IGNORE_CASE)
+        val role = getEnvOrThrow("ROLE")
+
+        //TODO delete these
+//        val hybridRegexes = listOf("flutter", "kmm", "kotlin multiplatform").map {
+//            Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE)
+//        }
+//        val excludeRegexes = listOf(
+//            "react native", "react-native", "reactnative",
+//            "web developer", "web engineer", "frontend", "full-stack",
+//            "intern", "internship",
+//            "qa engineer", "qa automation", "test engineer", "test automation",
+//            "quality assurance", "sdet", "tester", "testing engineer"
+//        ).map { Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE) }
+
+        val hasRoleRegex = Regex("\\b$role\\b", RegexOption.IGNORE_CASE)
         val iosRegex = Regex("\\bios\\b", RegexOption.IGNORE_CASE)
 
         fun normalize(text: String): String = text
@@ -77,18 +88,18 @@ data class JobResult(
             .trim()
     }
 
-    fun isRelevantAndroidJob(): Boolean {
+    fun isRelevantJob(): Boolean {
         val cache = JobFilterCache
         val normalizedText = cache.normalize(
             listOf(title, snippet, company, locationHint).joinToString(" ")
         )
 
-        if (cache.excludeRegexes.any { it.containsMatchIn(normalizedText) }) return false
-        if (cache.hybridRegexes.any { it.containsMatchIn(normalizedText) }) return true
+        if (cache.envExcludeRegexes.any { it.containsMatchIn(normalizedText) }) return false
+        if (cache.envHybridRegexes.any { it.containsMatchIn(normalizedText) }) return true
 
-        val hasAndroid = cache.androidRegex.containsMatchIn(normalizedText)
+        val hasRole = cache.hasRoleRegex.containsMatchIn(normalizedText)
         val hasIos = cache.iosRegex.containsMatchIn(normalizedText)
 
-        return hasAndroid
+        return hasRole
     }
 }
