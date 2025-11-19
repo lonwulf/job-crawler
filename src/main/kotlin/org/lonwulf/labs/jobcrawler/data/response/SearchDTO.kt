@@ -6,7 +6,14 @@ import com.squareup.moshi.JsonClass
 data class SearchDTO(val items: List<Item>?) {
 
     @JsonClass(generateAdapter = true)
-    data class Item(val title: String, val link: String, val snippet: String?, val pageMap: PageMap?) {
+    data class Item(
+        val title: String,
+        val link: String,
+        val snippet: String?,
+        val displayLink: String?,
+        val htmlTitle: String?,
+        val pageMap: PageMap?
+    ) {
         @JsonClass(generateAdapter = true)
         data class PageMap(val metaTags: List<Map<String, String>>)
     }

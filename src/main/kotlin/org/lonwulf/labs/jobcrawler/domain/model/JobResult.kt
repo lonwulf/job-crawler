@@ -42,18 +42,6 @@ data class JobResult(
     }
 
 
-//    fun isRelevantAndroidJob(): Boolean {
-//        val text = listOf(title, snippet, company, locationHint)
-//            .joinToString(" ")
-//            .lowercase()
-//
-//        val includeKeywords = listOf("android", "java", "kotlin", "jetpack", "compose", "mobile", "play store")
-//        val excludeKeywords = listOf("ios", "flutter", "web", "intern", "qa", "test automation")
-//
-//        val score = includeKeywords.count { it in text } - excludeKeywords.count { it in text }
-//        return score >= 1 // must have at least one relevant keyword and not many irrelevant ones
-//    }
-
     object JobFilterCache {
         private val nonWordChars = Regex("[^\\w\\s]+")
         private val slashes = Regex("[/\\\\]")
@@ -65,18 +53,6 @@ data class JobResult(
         }
 
         val role = getEnvOrThrow("ROLE")
-
-        //TODO delete these
-//        val hybridRegexes = listOf("flutter", "kmm", "kotlin multiplatform").map {
-//            Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE)
-//        }
-//        val excludeRegexes = listOf(
-//            "react native", "react-native", "reactnative",
-//            "web developer", "web engineer", "frontend", "full-stack",
-//            "intern", "internship",
-//            "qa engineer", "qa automation", "test engineer", "test automation",
-//            "quality assurance", "sdet", "tester", "testing engineer"
-//        ).map { Regex("\\b${Regex.escape(it)}\\b", RegexOption.IGNORE_CASE) }
 
         val hasRoleRegex = Regex("\\b$role\\b", RegexOption.IGNORE_CASE)
         val iosRegex = Regex("\\bios\\b", RegexOption.IGNORE_CASE)
